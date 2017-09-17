@@ -1,10 +1,8 @@
 import numpy as np 
 
-from func import forward, forward_affine, backward, backward_affine
+from func import forward, forward_affine, backward, backward_affine, cross_entropy
 
 class ThreeLayers(object):
-    
-    
     def __init__(self, input_dim=14, hiddenL1 = 100, hiddenL2 = 14, num_output=4):
         self.W = [] # weights
         self.B = [] # biases
@@ -15,16 +13,20 @@ class ThreeLayers(object):
         # Init weights and biases
 
         self.B.append(np.zeros(hiddenL1))
-        self.W.append(np.random.rand(input_dim, hiddenL1)*0.0001)
+        self.W.append(np.random.rand(input_dim, hiddenL1)*0.1)
+
+#        for i in xrange(10):
+ #           self.B.append(np.zeros(hiddenL1))
+  #          self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.01)
 
         self.B.append(np.zeros(hiddenL2))
-        self.W.append(np.random.rand(hiddenL1, hiddenL2)*0.0001)
-        
+        self.W.append(np.random.rand(hiddenL1, hiddenL2)*0.1)
+
         self.B.append(np.zeros(num_output))
-        self.W.append(np.random.rand(hiddenL2, num_output)*0.0001)
+        self.W.append(np.random.rand(hiddenL2, num_output)*0.1)
         
 
-    def compute(self, X, Y):
+    def compute(self, X, Y=None):
         layers = []
         caches = []
 
@@ -43,25 +45,20 @@ class ThreeLayers(object):
                 t_x = t_layer
                 layers.append(t_layer)
                 caches.append(t_cache)
-
-        if Y is None
-            return layers[len(layers)-1]
-
+        if Y is None:
+            result = layers[len(layers)-1]
+            max = np.argmax(result, axis = 1)
+            return max
         loss = 0
         gradiens_W = []
         gradiens_B = []
-
         ## Cross entropy 
         loss, de_loss = cross_entropy(layers[len(layers)-1], Y)
-
         ## Back propogation
-        
         dout = de_loss
-
-        for i in xrange len(cache) - 1:
+        for i in xrange(len(caches)):
             index = len(caches) - 1 - i
             t_cache = caches[index]
-            
             if index == len(caches) - 1: 
                 ## the last layer
                 t_dx, t_dw, t_db = backward_affine(dout, t_cache)
@@ -75,5 +72,5 @@ class ThreeLayers(object):
                 gradiens_B.append(t_db)
                 dout = t_dx
 
-        return loss, gradiens_W, gradiens_B
+        return loss, np.array(gradiens_W), np.array(gradiens_B)
 

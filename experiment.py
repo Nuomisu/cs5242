@@ -12,6 +12,7 @@ class Experiment(object):
         self.y_test = data['y_test']
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
+        self.loss_log = []
 
     def _reset(self):
         self.loss_log = []
@@ -22,42 +23,39 @@ class Experiment(object):
     def train(self):
 
         for i in xrange(self.num_iterations):
-            self._iteration()
+            loss = self._iteration()
 
             train_acc = self.check_accuracy(self.x_train, self.y_train)
             test_acc = self.check_accuracy(self.x_test, self.y_test)
-
-            print '[Iteration %d / %d] loss: %f; Training Accuracy: %f; Test Accuracy: %f' % (i + 1, num_iterations, self.loss_log[-1], train_acc, test_acc)
-
-
+#            print "iteration %d, loss %f" %(i, loss)
+            print '[Iteration %d / %d] loss: %f; Training Accuracy: %f; Test Accuracy: %f' % (i + 1, self.num_iterations, self.loss_log[-1], train_acc, test_acc)
 
     def _iteration(self):
-
-
         loss, gradiens_W, gradiens_B = self.model.compute(self.x_train, self.y_train)
         self.loss_log.append(loss)
-        
-        for i in xrange(self.model.W):
+        w_size = len(self.model.W)
+        for i in xrange(len(self.model.W)):
             w_old = self.model.W[i]
-            dw = gradiens_W[i]
+            dw = gradiens_W[w_size - i - 1]
             b_old = self.model.B[i]
-            dw = gradiens_B[i]
+            db = gradiens_B[w_size - i - 1]
             
+            print dw, db
             next_w, next_learning_rate = sgd(w_old, dw, self.learning_rate)
-            next_w, next_learning_rate = sgd(b_old, dw, self.learning_rate)
+            next_b, next_learning_rate = sgd(b_old, db, self.learning_rate)
             
             self.model.W[i] = next_w
-            self.model.B[i] = next_w
+            self.model.B[i] = next_b
             self.learning_rate = next_learning_rate
+        #print self.model.W
+        #print self.model.B
+        return loss
             
 
     def check_accuracy(self, X, Y):
-        
-        y_pred = self.model.loss(X)
-        
+        y_pred = self.model.compute(X)
         acc = np.mean(y_pred == Y)
-
-    return acc
+        return acc
 
 
 
