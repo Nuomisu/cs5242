@@ -15,7 +15,7 @@ def forward(x, w, b):
     return out, cache
 
 def forward_affine(x, w, b):
-    result = x.dot(w) + b
+    result = np.dot(x, w) + b
     cache = (x, w, b)
     return result, cache
 
@@ -33,16 +33,16 @@ def backward(out, cache):
 def backward_affine(out, cache):
     x, w, b = cache
     d_x, d_w, d_b = None, None, None
-    d_w = x.T.dot(out)
+    d_w = np.dot(x.T, out)
     d_b = np.sum(out, axis = 0)
-    d_x = out.dot(w.T)
+    d_x = np.dot(out, w.T)
     return d_x, d_w, d_b
 
 
 def backward_relu(out, cache):
     x = cache
     d_x = out 
-    d_x[cache < 0] = 0
+    d_x[cache <= 0] = 0
     return d_x
 
 

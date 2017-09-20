@@ -40,7 +40,6 @@ class Experiment(object):
             b_old = self.model.B[i]
             db = gradiens_B[w_size - i - 1]
             
-            print dw, db
             next_w, next_learning_rate = sgd(w_old, dw, self.learning_rate)
             next_b, next_learning_rate = sgd(b_old, db, self.learning_rate)
             
@@ -54,7 +53,11 @@ class Experiment(object):
 
     def check_accuracy(self, X, Y):
         y_pred = self.model.compute(X)
-        acc = np.mean(y_pred == Y)
+        right = 0
+        for i in xrange(len(Y)):
+            if y_pred[i] == Y[i]:
+                right += 1
+        acc = right *1.0 / len(Y)
         return acc
 
 
