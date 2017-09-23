@@ -13,6 +13,8 @@ class Experiment(object):
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
         self.loss_log = []
+        self.config_w = [None]*len(model.W)
+        self.config_b = [None]*len(model.B)
 
     def _reset(self):
         self.loss_log = []
@@ -40,12 +42,14 @@ class Experiment(object):
             b_old = self.model.B[i]
             db = gradiens_B[w_size - i - 1]
             
-            next_w, next_learning_rate = sgd(w_old, dw, self.learning_rate)
-            next_b, next_learning_rate = sgd(b_old, db, self.learning_rate)
+            #next_w, next_learning_rate = sgd(w_old, dw, self.learning_rate)
+            #next_b, next_learning_rate = sgd(b_old, db, self.learning_rate)
+            next_w, self.config_w[i] = adam(w_old, dw, self.config_w[i])
+            next_b, self.config_b[i] = adam(b_old, db, self.config_b[i])
             
             self.model.W[i] = next_w
             self.model.B[i] = next_b
-            self.learning_rate = next_learning_rate
+            #self.learning_rate = next_learning_rate
         #print self.model.W
         #print self.model.B
         return loss

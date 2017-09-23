@@ -77,14 +77,15 @@ def adam(x, dx, config=None):
     - v: Moving average of squared gradient.
     - t: Iteration number.
     """
-    if config is None: config = {}
-    config.setdefault('learning_rate', 1e-3)
-    config.setdefault('beta1', 0.9)
-    config.setdefault('beta2', 0.999)
-    config.setdefault('epsilon', 1e-8)
-    config.setdefault('m', np.zeros_like(x))
-    config.setdefault('v', np.zeros_like(x))
-    config.setdefault('t', 0)
+    if config is None: 
+        config = {}
+        config['learning_rate'] = 1e-2
+        config['beta1'] = 0.9
+        config['beta2'] = 0.999
+        config['epsilon'] = 1e-8
+        config['m'] = np.zeros_like((x))
+        config['v'] = np.zeros_like((x))
+        config['t'] = 0
     
     next_x = None
     #############################################################################
@@ -95,7 +96,7 @@ def adam(x, dx, config=None):
     learning_rate, beta1, beta2, eps, m, v, t \
         = config['learning_rate'], config['beta1'], config['beta2'], \
         config['epsilon'], config['m'], config['v'], config['t']
-
+    
     t += 1
     m = beta1 * m + (1 - beta1) * dx
     v = beta2 * v + (1 - beta2) * (dx**2)

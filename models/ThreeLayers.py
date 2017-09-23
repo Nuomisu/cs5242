@@ -3,7 +3,7 @@ import numpy as np
 from func import forward, forward_affine, backward, backward_affine, cross_entropy
 
 class ThreeLayers(object):
-    def __init__(self, input_dim=14, hiddenL1 = 100, hiddenL2 = 14, num_output=4):
+    def __init__(self, input_dim=14, hiddenL1 = 100, hiddenL2 = 40, num_output=4):
         self.W = [] # weights
         self.B = [] # biases
 
@@ -13,17 +13,17 @@ class ThreeLayers(object):
         # Init weights and biases
 
         self.B.append(np.zeros((1,hiddenL1)))
-        self.W.append(np.random.rand(input_dim, hiddenL1)*0.1)
+        self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
 
         #for i in xrange(3):
         #self.B.append(np.zeros((1,hiddenL1)))
         #self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.1)
 
         self.B.append(np.zeros((1,hiddenL2)))
-        self.W.append(np.random.rand(hiddenL1, hiddenL2)*0.1)
+        self.W.append(np.random.rand(hiddenL1, hiddenL2)*0.01)
 
         self.B.append(np.zeros((1,num_output)))
-        self.W.append(np.random.rand(hiddenL2, num_output)*0.1)
+        self.W.append(np.random.rand(hiddenL2, num_output)*0.01)
         
 
     def compute(self, X, Y=None):
