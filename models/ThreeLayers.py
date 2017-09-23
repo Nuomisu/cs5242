@@ -3,11 +3,11 @@ import numpy as np
 from func import forward, forward_affine, backward, backward_affine, cross_entropy
 
 class ThreeLayers(object):
-    def __init__(self, input_dim=14, num_output=4):
+    def __init__(self, case=1, input_dim=14, num_output=4):
         self.W = [] # weights
         self.B = [] # biases
-        
-        self.case = 3
+        np.random.seed()
+        self.case = case
         if self.case == 1:
             hiddenL1 = 100
             hiddenL2 = 40
@@ -29,7 +29,7 @@ class ThreeLayers(object):
             self.W.append(np.random.rand(hiddenL1, num_output)*0.01)
         elif self.case == 3:
             hiddenL1 = 14
-            repeat = 28
+            repeat = 10
             self.B.append(np.zeros((1,hiddenL1)))
             self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
             for i in xrange(repeat-1):

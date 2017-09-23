@@ -1,4 +1,5 @@
 import csv
+import sys
 import numpy as np
 import models.ThreeLayers as three
 from experiment import Experiment
@@ -38,7 +39,8 @@ if __name__ == "__main__":
     print y_test.shape
     data = {"x_train": x_train, "y_train": y_train,
             "x_test": x_test, "y_test": y_test}
-    model = three.ThreeLayers()
+    case = int(sys.argv[1])
+    model = three.ThreeLayers(case)
     exp = Experiment(model, data, 1000, 1)
     exp.train()
 

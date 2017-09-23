@@ -79,7 +79,7 @@ def adam(x, dx, config=None):
     """
     if config is None: 
         config = {}
-        config['learning_rate'] = 1e-2
+        config['learning_rate'] = 1e-3
         config['beta1'] = 0.9
         config['beta2'] = 0.999
         config['epsilon'] = 1e-8
