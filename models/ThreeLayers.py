@@ -3,27 +3,40 @@ import numpy as np
 from func import forward, forward_affine, backward, backward_affine, cross_entropy
 
 class ThreeLayers(object):
-    def __init__(self, input_dim=14, hiddenL1 = 100, hiddenL2 = 40, num_output=4):
+    def __init__(self, input_dim=14, num_output=4):
         self.W = [] # weights
         self.B = [] # biases
-
-        self.hiddenL1 = hiddenL1
-        self.hiddenL2 = hiddenL2
-
-        # Init weights and biases
-
-        self.B.append(np.zeros((1,hiddenL1)))
-        self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
-
-        #for i in xrange(3):
-        #self.B.append(np.zeros((1,hiddenL1)))
-        #self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.1)
-
-        self.B.append(np.zeros((1,hiddenL2)))
-        self.W.append(np.random.rand(hiddenL1, hiddenL2)*0.01)
-
-        self.B.append(np.zeros((1,num_output)))
-        self.W.append(np.random.rand(hiddenL2, num_output)*0.01)
+        
+        self.case = 3
+        if self.case == 1:
+            hiddenL1 = 100
+            hiddenL2 = 40
+            self.B.append(np.zeros((1,hiddenL1)))
+            self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
+            self.B.append(np.zeros((1,hiddenL2)))
+            self.W.append(np.random.rand(hiddenL1, hiddenL2)*0.01)
+            self.B.append(np.zeros((1,num_output)))
+            self.W.append(np.random.rand(hiddenL2, num_output)*0.01)
+        elif self.case == 2:
+            hiddenL1 = 28
+            repeat = 6
+            self.B.append(np.zeros((1,hiddenL1)))
+            self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
+            for i in xrange(repeat-1):
+                self.B.append(np.zeros((1,hiddenL1)))
+                self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.01)
+            self.B.append(np.zeros((1,num_output)))
+            self.W.append(np.random.rand(hiddenL1, num_output)*0.01)
+        elif self.case == 3:
+            hiddenL1 = 14
+            repeat = 28
+            self.B.append(np.zeros((1,hiddenL1)))
+            self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
+            for i in xrange(repeat-1):
+                self.B.append(np.zeros((1,hiddenL1)))
+                self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.01)
+            self.B.append(np.zeros((1,num_output)))
+            self.W.append(np.random.rand(hiddenL1, num_output)*0.01)
         
 
     def compute(self, X, Y=None):
@@ -73,6 +86,5 @@ class ThreeLayers(object):
                 gradiens_W.append(t_dw)
                 gradiens_B.append(t_db)
                 dout = t_dx
-
-        return loss, np.array(gradiens_W), np.array(gradiens_B)
+        return loss, gradiens_W, gradiens_B
 
