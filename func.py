@@ -47,15 +47,19 @@ def backward_relu(out, cache):
 
 
 def cross_entropy(x, y):
-    probs = np.exp(x, dtype=np.float64)
+    print x
+    x= x.astype(np.float32)
+    #probs = np.exp(x)
+    probs = np.exp(x - np.max(x, axis=1, keepdims=True))
     probs /= np.sum(probs, axis=1, keepdims=True)
     N = x.shape[0]
-    logprobs = []
-    for i in xrange(probs.shape[0]):
-        logprobs.append(probs[i][y[i]])
-    corect_logprobs = -np.log(logprobs)
-    loss = np.sum(corect_logprobs)
-    loss = loss / N
+    #logprobs = []
+    #for i in xrange(probs.shape[0]):
+    #    logprobs.append(probs[i][y[i]])
+    #corect_logprobs = -np.log(logprobs)
+    #loss = np.sum(corect_logprobs)
+    #loss = loss / N
+    loss = 0
     dx = probs.copy()
     for i in xrange(probs.shape[0]):
         dx[i][y[i]] -= 1

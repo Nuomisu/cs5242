@@ -3,46 +3,93 @@ import numpy as np
 from func import forward, forward_affine, backward, backward_affine, cross_entropy
 
 class ThreeLayers(object):
-    def __init__(self, case=1, input_dim=14, num_output=4):
+    def __init__(self, case=1, input_dim=14, num_output=4, w=None, b=None):
         self.W = [] # weights
         self.B = [] # biases
         np.random.seed()
         self.case = case
+        self.input_dim = input_dim
+        if w != None and b != None:
+            self.load(w, b)
+        else:
+            if self.case == 1:
+                hiddenL1 = 100
+                hiddenL2 = 40
+                self.B.append(np.zeros((1,hiddenL1)))
+                self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
+                self.B.append(np.zeros((1,hiddenL2)))
+                self.W.append(np.random.rand(hiddenL1, hiddenL2)*0.01)
+                self.B.append(np.zeros((1,num_output)))
+                self.W.append(np.random.rand(hiddenL2, num_output)*0.01)
+            elif self.case == 2:
+                hiddenL1 = 28
+                repeat = 6
+                self.B.append(np.zeros((1,hiddenL1)))
+                self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
+                for i in xrange(repeat-1):
+                    self.B.append(np.zeros((1,hiddenL1)))
+                    self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.01)
+                self.B.append(np.zeros((1,num_output)))
+                self.W.append(np.random.rand(hiddenL1, num_output)*0.01)
+            elif self.case == 3:
+                hiddenL1 = 14
+                repeat = 28
+                self.B.append(np.zeros((1,hiddenL1)))
+                self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
+                for i in xrange(repeat-1):
+                    self.B.append(np.zeros((1,hiddenL1)))
+                    self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.01)
+                self.B.append(np.zeros((1,num_output)))
+                self.W.append(np.random.rand(hiddenL1, num_output)*0.01)
+    
+    def load(self, w, b):
         if self.case == 1:
             hiddenL1 = 100
             hiddenL2 = 40
-            self.B.append(np.zeros((1,hiddenL1)))
-            self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
-            self.B.append(np.zeros((1,hiddenL2)))
-            self.W.append(np.random.rand(hiddenL1, hiddenL2)*0.01)
-            self.B.append(np.zeros((1,num_output)))
-            self.W.append(np.random.rand(hiddenL2, num_output)*0.01)
+            for bias in b:
+                self.B.append(np.array(bias, dtype=np.float32).reshape(1, len(bias)))
+            if len(w) != self.input_dim + hiddenL1 + hiddenL2:
+                print "w len is not correct"
+            w0 = w[0:self.input_dim]
+            self.W.append(np.array(w0, dtype=np.float32))
+            prev = self.input_dim
+            w1 = w[prev: prev+hiddenL1]
+            prev += hiddenL1
+            self.W.append(np.array(w1, dtype=np.float32))
+            w2 = w[prev:]
+            self.W.append(np.array(w2, dtype=np.float32))
         elif self.case == 2:
             hiddenL1 = 28
             repeat = 6
-            self.B.append(np.zeros((1,hiddenL1)))
-            self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
+            for bias in b:
+                self.B.append(np.array(bias, dtype=np.float32).reshape(1, len(bias)))
+            w0 = w[0:self.input_dim]
+            self.W.append(np.array(w0, dtype=np.float32))
+            prev = self.input_dim
             for i in xrange(repeat-1):
-                self.B.append(np.zeros((1,hiddenL1)))
-                self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.01)
-            self.B.append(np.zeros((1,num_output)))
-            self.W.append(np.random.rand(hiddenL1, num_output)*0.01)
+                w1 = w[prev: prev+hiddenL1]
+                prev += hiddenL1     
+                self.W.append(np.array(w1, dtype=np.float32))
+            w2 = w[prev:]
+            self.W.append(np.array(w2, dtype=np.float32))
         elif self.case == 3:
             hiddenL1 = 14
-            repeat = 10
-            self.B.append(np.zeros((1,hiddenL1)))
-            self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
+            repeat = 28
+            for bias in b:
+                self.B.append(np.array(bias, dtype=np.float32).reshape(1, len(bias)))
+            w0 = w[0:self.input_dim]
+            self.W.append(np.array(w0, dtype=np.float32))
+            prev = self.input_dim
             for i in xrange(repeat-1):
-                self.B.append(np.zeros((1,hiddenL1)))
-                self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.01)
-            self.B.append(np.zeros((1,num_output)))
-            self.W.append(np.random.rand(hiddenL1, num_output)*0.01)
-        
+                w1 = w[prev: prev+hiddenL1]
+                prev += hiddenL1     
+                self.W.append(np.array(w1, dtype=np.float32))
+            w2 = w[prev:]
+            self.W.append(np.array(w2, dtype=np.float32))
 
     def compute(self, X, Y=None):
         layers = []
         caches = []
-
         reg = 1e-3 # regularization strength
         ## Forward calculation and active
         t_x = X

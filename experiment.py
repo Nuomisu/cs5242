@@ -22,9 +22,8 @@ class Experiment(object):
         self.train_acc_log = []
         self.val_acc_log = []
 
-    
+    # for 2 (1,2,3) 
     def train(self):
-
         for i in xrange(self.num_iterations):
             loss = self._iteration()
             train_acc = self.check_accuracy(self.x_train, self.y_train)
@@ -34,6 +33,7 @@ class Experiment(object):
             info = {"loss":loss, "train_acc": train_acc, "test_acc": test_acc}
             self.loss_log.append(info)
 
+    # for 2 (1,2,3) 
     def _iteration(self):
         batch_num = (len(self.x_train)+self.batchsize-1)/self.batchsize
         for i in xrange(batch_num):
@@ -63,7 +63,7 @@ class Experiment(object):
             #print self.model.B
         return loss
             
-
+    # for 2 (1,2,3) 
     def check_accuracy(self, X, Y):
         y_pred = self.model.compute(X)
         right = 0
@@ -73,7 +73,17 @@ class Experiment(object):
         acc = right *1.0 / len(Y)
         return acc
 
-
-
+    # for 2 (4)
+    def check_speicalpoint(self):
+        w = []
+        b = []
+        w_size = len(self.model.W)
+        loss, gradiens_W, gradiens_B = self.model.compute(self.x_train, self.y_train)
+        for i in xrange(len(self.model.W)):
+            dw = gradiens_W[w_size - i - 1]
+            db = gradiens_B[w_size - i - 1]
+            w.append(dw)
+            b.append(db)
+        return w,b
 
 

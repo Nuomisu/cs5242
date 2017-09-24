@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import models.ThreeLayers as three
 from experiment import Experiment
+from plot import print_graph
 import matplotlib.pyplot as plt
 
 def readfile(path):
@@ -10,6 +11,8 @@ def readfile(path):
     x_test = []
     y_train = []
     y_test = []
+    x_a= []
+    y_a= []
     with open(path+'/x_train.csv', 'rb') as csvfile:
         rows = csv.reader(csvfile)
         for row in rows:
@@ -30,60 +33,70 @@ def readfile(path):
         for row in rows:
             newrow = np.array(row).astype(np.int)
             y_test.append(newrow)
-    return np.array(x_train), np.array(y_train), np.array(x_test), np.array(y_test)
+    with open(path+'/x_a.csv', 'rb') as csvfile:
+        rows = csv.reader(csvfile)
+        for row in rows:
+            newrow = np.array(row).astype(np.float)
+            x_a.append(newrow)
+    with open(path+'/y_a.csv', 'rb') as csvfile:
+        rows = csv.reader(csvfile)
+        for row in rows:
+            newrow = np.array(row).astype(np.int)
+            y_a.append(newrow)
+    return np.array(x_train), np.array(y_train), np.array(x_test), np.array(y_test), np.array(x_a), np.array(y_a)
 
-def print_graph(loss_log):
-    x = []
-    y = []
-    y1 = []
-    y2 = []
-    for i, info in enumerate(loss_log):
-        loss = info["loss"]
-        train_acc = info["train_acc"]
-        test_acc = info["test_acc"]
-        x.append(i+1)
-        y.append(loss)
-        y1.append(train_acc)
-        y2.append(test_acc)
-    plt.figure(1)
-    plt.xlabel('iterations number')
-    plt.ylabel('loss')
-    plt.title('loss vs iterations for training data')
-    plt.ylim([0,2])
-    plt.xlim([1,len(loss_log)])
-    plt.xticks(x)
-    plt.plot(x, y)
-    plt.savefig('loss.png')
-    plt.figure(2)
-    plt.xlabel('iterations number')
-    plt.ylabel('train acc')
-    plt.title('train acc vs iterations for training data')
-    plt.ylim([0,1])
-    plt.xlim([1,len(loss_log)])
-    plt.xticks(x)
-    plt.plot(x, y1)
-    plt.savefig('train_acc.png')
-    plt.figure(3)
-    plt.xlabel('iterations number')
-    plt.ylabel('test acc')
-    plt.title('test acc vs iterations for test data')
-    plt.ylim([0,1])
-    plt.xlim([1,len(loss_log)])
-    plt.xticks(x)
-    plt.plot(x, y2)
-    plt.savefig('test_acc.png')
-    
+def loadwb(wpath, bpath):
+    w = []
+    b = []
+    with open(wpath, 'rb') as csvfile:
+        rows = csv.reader(csvfile)
+        for row in rows:
+            w.append(row[1:])
+    with open(bpath, 'rb') as csvfile:
+        rows = csv.reader(csvfile)
+        for row in rows:
+            b.append(row[1:])
+    return w,b
 
-if __name__ == "__main__":
-    x_train, y_train, x_test, y_test = readfile("data")
-    print x_train.shape
-    print y_train.shape
-    print x_test.shape
-    print y_test.shape
-    data = {"x_train": x_train, "y_train": y_train,
-            "x_test": x_test, "y_test": y_test}
+def q2_123(data):
     case = int(sys.argv[1])
     model = three.ThreeLayers(case)
     exp = Experiment(model, data, 50, 1)
     exp.train()
     print_graph(exp.loss_log)
+
+def q2_4(data, path):
+    case = int(sys.argv[1])
+    wfile = "w-100-40-4.csv"
+    bfile = "b-100-40-4.csv"
+    if case == 2:
+        wfile = "w-28-6-4.csv"
+        bfile = "b-28-6-4.csv"
+    elif case == 3:
+        wfile = "w-14-28-4.csv"
+        bfile = "b-14-28-4.csv"
+    w, b = loadwb(path+wfile, path+bfile)
+    model = three.ThreeLayers(case, 14, 4, w, b)
+    data["x_train"] = data["x_a"]
+    data["y_train"] = data["y_a"]
+    exp = Experiment(model, data, 1, 1)
+    w,b = exp.check_speicalpoint()
+    # output dw db
+    with open("result/"+wfile, 'wb') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        for wouter in w:
+            for line in wouter:
+                writer.writerow(line)
+    with open("result/"+bfile, 'wb') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        for line in b:
+            writer.writerow(line)
+
+if __name__ == "__main__":
+    x_train, y_train, x_test, y_test, x_a, y_a = readfile("data")
+    data = {"x_train": x_train, "y_train": y_train,
+            "x_test": x_test, "y_test": y_test,
+            "x_a": x_a, "y_a": y_a}
+#    q2_123(data)
+    q2_4(data, "data/c/") 
+
