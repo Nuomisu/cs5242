@@ -31,7 +31,8 @@ class Experiment(object):
             test_acc = self.check_accuracy(self.x_test, self.y_test)
 #            print "iteration %d, loss %f" %(i, loss)
             print '[Iteration %d / %d] loss: %f; Training Accuracy: %f; Test Accuracy: %f' % (i + 1, self.num_iterations, loss, train_acc, test_acc)
-            self.loss_log.append(loss)
+            info = {"loss":loss, "train_acc": train_acc, "test_acc": test_acc}
+            self.loss_log.append(info)
 
     def _iteration(self):
         batch_num = (len(self.x_train)+self.batchsize-1)/self.batchsize
