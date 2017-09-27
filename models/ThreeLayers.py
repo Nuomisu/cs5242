@@ -35,12 +35,12 @@ class ThreeLayers(object):
                 hiddenL1 = 14
                 repeat = 28
                 self.B.append(np.zeros((1,hiddenL1)))
-                self.W.append(np.random.rand(input_dim, hiddenL1)*0.01)
+                self.W.append(np.random.rand(input_dim, hiddenL1)*0.1)
                 for i in xrange(repeat-1):
                     self.B.append(np.zeros((1,hiddenL1)))
-                    self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.01)
+                    self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.1)
                 self.B.append(np.zeros((1,num_output)))
-                self.W.append(np.random.rand(hiddenL1, num_output)*0.01)
+                self.W.append(np.random.rand(hiddenL1, num_output)*0.1)
     
     def load(self, w, b):
         if self.case == 1:
@@ -90,7 +90,6 @@ class ThreeLayers(object):
     def compute(self, X, Y=None):
         layers = []
         caches = []
-        reg = 1e-3 # regularization strength
         ## Forward calculation and active
         t_x = X
         for i in xrange(len(self.W)):
@@ -114,8 +113,6 @@ class ThreeLayers(object):
         gradiens_B = []
         ## Cross entropy 
         loss, de_loss = cross_entropy(layers[len(layers)-1], Y)
-        #reg_loss = 0.5*reg*np.sum(W*W)
-        #loss += reg_loss
         ## Back propogation
         dout = de_loss
         for i in xrange(len(caches)):

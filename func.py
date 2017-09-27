@@ -47,19 +47,18 @@ def backward_relu(out, cache):
 
 
 def cross_entropy(x, y):
-    print x
     x= x.astype(np.float32)
-    #probs = np.exp(x)
-    probs = np.exp(x - np.max(x, axis=1, keepdims=True))
+    probs = np.exp(x)
+    #probs = np.exp(x - np.max(x, axis=1, keepdims=True))
     probs /= np.sum(probs, axis=1, keepdims=True)
     N = x.shape[0]
-    #logprobs = []
-    #for i in xrange(probs.shape[0]):
-    #    logprobs.append(probs[i][y[i]])
-    #corect_logprobs = -np.log(logprobs)
-    #loss = np.sum(corect_logprobs)
-    #loss = loss / N
-    loss = 0
+    logprobs = []
+    for i in xrange(probs.shape[0]):
+        logprobs.append(probs[i][y[i]])
+    corect_logprobs = -np.log(logprobs)
+    loss = np.sum(corect_logprobs)
+    loss = loss / N
+    #loss = 0
     dx = probs.copy()
     for i in xrange(probs.shape[0]):
         dx[i][y[i]] -= 1
@@ -68,19 +67,6 @@ def cross_entropy(x, y):
 
 
 def adam(x, dx, config=None):
-    """
-    Uses the Adam update rule, which incorporates moving averages of both the
-    gradient and its square and a bias correction term.
-
-    config format:
-    - learning_rate: Scalar learning rate.
-    - beta1: Decay rate for moving average of first moment of gradient.
-    - beta2: Decay rate for moving average of second moment of gradient.
-    - epsilon: Small scalar used for smoothing to avoid dividing by zero.
-    - m: Moving average of gradient.
-    - v: Moving average of squared gradient.
-    - t: Iteration number.
-    """
     if config is None: 
         config = {}
         config['learning_rate'] = 1e-3
@@ -90,30 +76,42 @@ def adam(x, dx, config=None):
         config['m'] = np.zeros_like((x))
         config['v'] = np.zeros_like((x))
         config['t'] = 0
-    
     next_x = None
-    #############################################################################
-    # TODO: Implement the Adam update formula, storing the next value of x in   #
-    # the next_x variable. Don't forget to update the m, v, and t variables     #
-    # stored in config.                                                         #
-    #############################################################################
     learning_rate, beta1, beta2, eps, m, v, t \
         = config['learning_rate'], config['beta1'], config['beta2'], \
         config['epsilon'], config['m'], config['v'], config['t']
-    
     t += 1
     m = beta1 * m + (1 - beta1) * dx
     v = beta2 * v + (1 - beta2) * (dx**2)
-
     # bias correction:
     mb = m / (1 - beta1**t)
     vb = v / (1 - beta2**t)
-
     next_x = -learning_rate * mb / (np.sqrt(vb) + eps) + x
-
     config['m'], config['v'], config['t'] = m, v, t
-    #############################################################################
-    #                             END OF YOUR CODE                              #
-    #############################################################################
-    
+    return next_x, config
+
+
+def sgd_momentum(w, dw, config=None):
+    if config is None:
+        config = {}
+        config['learning_rate'] = 1e-1
+        config['momentum'] = 0.6
+        config['velocity'] = np.zeros_like(w)
+    v = config['velocity']
+    next_v = config['momentum'] * v - config['learning_rate'] * dw
+    next_w = w + next_v
+    config['velocity'] = next_v
+    return next_w, config
+
+def rmsprop(x, dx, config=None):
+    if config is None:
+        config = {}
+        config['learning_rate'] = 1e-1
+        config['decay_rate'] = 0.99
+        config['epsilon'] = 1e-8
+        config['cache'] = np.zeros_like(x)
+    config['cache'] = config['cache'] * config['decay_rate'] +\
+        (1 - config['decay_rate']) * dx**2
+    next_x = x - config['learning_rate'] * dx / (np.sqrt(config['cache']
+                                                         + config['epsilon']))
     return next_x, config

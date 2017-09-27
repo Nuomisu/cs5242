@@ -1,10 +1,10 @@
 import numpy as np 
 
-from func import sgd, adam
+from func import sgd, adam, sgd_momentum, rmsprop
 
 class Experiment(object):
 
-    def __init__(self, model, data, num_iterations, learning_rate, batchsize = 16):
+    def __init__(self, model, data, num_iterations, learning_rate, batchsize = 32):
         self.model = model
         self.x_train = data['x_train']
         self.y_train = data['y_train']
@@ -28,9 +28,9 @@ class Experiment(object):
             loss = self._iteration()
             train_acc = self.check_accuracy(self.x_train, self.y_train)
             test_acc = self.check_accuracy(self.x_test, self.y_test)
-#            print "iteration %d, loss %f" %(i, loss)
-            print '[Iteration %d / %d] loss: %f; Training Accuracy: %f; Test Accuracy: %f' % (i + 1, self.num_iterations, loss, train_acc, test_acc)
-            info = {"loss":loss, "train_acc": train_acc, "test_acc": test_acc}
+            test_loss,_,_ = self.model.compute(self.x_test, self.y_test)
+            print '[Iteration %d / %d] loss: %f; Training Accuracy: %f; Test Accuracy: %f; Test Loss: %f' % (i + 1, self.num_iterations, loss, train_acc, test_acc, test_loss)
+            info = {"loss":loss, "train_acc": train_acc, "test_acc": test_acc, "test_loss": test_loss}
             self.loss_log.append(info)
 
     # for 2 (1,2,3) 
@@ -52,15 +52,14 @@ class Experiment(object):
                 dw = gradiens_W[w_size - i - 1]
                 b_old = self.model.B[i]
                 db = gradiens_B[w_size - i - 1]
-                #next_w, next_learning_rate = sgd(w_old, dw, self.learning_rate)
-                #next_b, next_learning_rate = sgd(b_old, db, self.learning_rate)
-                #self.learning_rate = next_learning_rate
                 next_w, self.config_w[i] = adam(w_old, dw, self.config_w[i])
                 next_b, self.config_b[i] = adam(b_old, db, self.config_b[i])
+                #next_w, self.config_w[i] = sgd_momentum(w_old, dw, self.config_w[i])
+                #next_b, self.config_b[i] = sgd_momentum(b_old, db, self.config_b[i])
+                #next_w, self.config_w[i] = rmsprop(w_old, dw, self.config_w[i])
+                #next_b, self.config_b[i] = rmsprop(b_old, db, self.config_b[i])
                 self.model.W[i] = next_w
                 self.model.B[i] = next_b
-            #print self.model.W
-            #print self.model.B
         return loss
             
     # for 2 (1,2,3) 

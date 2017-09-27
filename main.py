@@ -4,7 +4,6 @@ import numpy as np
 import models.ThreeLayers as three
 from experiment import Experiment
 from plot import print_graph
-import matplotlib.pyplot as plt
 
 def readfile(path):
     x_train = []
@@ -97,6 +96,6 @@ if __name__ == "__main__":
     data = {"x_train": x_train, "y_train": y_train,
             "x_test": x_test, "y_test": y_test,
             "x_a": x_a, "y_a": y_a}
-#    q2_123(data)
-    q2_4(data, "data/c/") 
+    q2_123(data)
+#    q2_4(data, "data/c/") 
 
