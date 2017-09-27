@@ -60,7 +60,7 @@ def loadwb(wpath, bpath):
 def q2_123(data):
     case = int(sys.argv[1])
     model = three.ThreeLayers(case)
-    exp = Experiment(model, data, 50, 1)
+    exp = Experiment(model, data, 100, 1)
     exp.train()
     print_graph(exp.loss_log)
 

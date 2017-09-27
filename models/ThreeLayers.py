@@ -35,12 +35,12 @@ class ThreeLayers(object):
                 hiddenL1 = 14
                 repeat = 28
                 self.B.append(np.zeros((1,hiddenL1)))
-                self.W.append(np.random.rand(input_dim, hiddenL1)*0.1)
+                self.W.append((1*np.random.rand(input_dim, hiddenL1)-1)*0.4)
                 for i in xrange(repeat-1):
                     self.B.append(np.zeros((1,hiddenL1)))
-                    self.W.append(np.random.rand(hiddenL1, hiddenL1)*0.1)
+                    self.W.append((2*np.random.rand(hiddenL1, hiddenL1)-1)*0.4)
                 self.B.append(np.zeros((1,num_output)))
-                self.W.append(np.random.rand(hiddenL1, num_output)*0.1)
+                self.W.append((2*np.random.rand(hiddenL1, num_output)-1)*0.4)
     
     def load(self, w, b):
         if self.case == 1:

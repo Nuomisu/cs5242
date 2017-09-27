@@ -48,8 +48,8 @@ def backward_relu(out, cache):
 
 def cross_entropy(x, y):
     x= x.astype(np.float32)
-    probs = np.exp(x)
-    #probs = np.exp(x - np.max(x, axis=1, keepdims=True))
+    #probs = np.exp(x)
+    probs = np.exp(x - np.max(x, axis=1, keepdims=True))
     probs /= np.sum(probs, axis=1, keepdims=True)
     N = x.shape[0]
     logprobs = []
