@@ -237,7 +237,6 @@ class Solver(object):
             N = num_samples
             X = X[mask]
             y = y[mask]
-
         # Compute predictions in batches
         num_batches = N // batch_size
         if N % batch_size != 0:
@@ -282,6 +281,7 @@ class Solver(object):
             # iteration, and at the end of each epoch.
             first_it = (t == 0)
             last_it = (t == num_iterations - 1)
+            #if first_it or last_it or epoch_end:
             if first_it or last_it or epoch_end:
                 train_acc = self.check_accuracy(self.X_train, self.y_train,
                     num_samples=self.num_train_samples)
