@@ -153,14 +153,17 @@ class ThreeLayerConvNet(object):
     x = conv_layer.reshape((N, F * Hp * Wp))
     w = W2
     b = b2
+    if self.use_dropout:
+        dropoutlayer, dropoutcache = dropout_forward(x, self.dropout_param)
+        x = dropoutlayer
     hidden_layer, cache_hidden_layer = affine_relu_forward(x, w, b)
     N, Hh = hidden_layer.shape
 
     # Add dropout layer after fc
     x = hidden_layer
-    dropoutcache = None
+    dropoutcache1 = None
     if self.use_dropout:
-        dropoutlayer, dropoutcache = dropout_forward(x, self.dropout_param)
+        dropoutlayer, dropoutcache1 = dropout_forward(x, self.dropout_param)
         x = dropoutlayer
     # Forward into the linear output layer
     
@@ -195,12 +198,12 @@ class ThreeLayerConvNet(object):
     dW3 += self.reg * W3
     # Backprop dropout
     if self.use_dropout:
-        dx3 = dropout_backward(dx3, dropoutcache)
+        dx3 = dropout_backward(dx3, dropoutcache1)
     # Backprop into first layer
     dx2, dW2, db2 = affine_relu_backward(dx3, cache_hidden_layer)
-
     dW2 += self.reg * W2
-
+    if self.use_dropout:
+        dx2 = dropout_backward(dx2, dropoutcache)
     # Backprop into the conv layer
     dx2 = dx2.reshape(N, F, Hp, Wp)
  
